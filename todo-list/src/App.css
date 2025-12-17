@@ -1,0 +1,220 @@
+/* ============================================
+   ATELIER PRATIQUE - SÉANCE 1
+   Styles pour l'application Todo List
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Container principal */
+.app {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 650px;
+  min-width: 600px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Titre */
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 28px;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 5px;
+}
+
+/* Zone de saisie */
+.input-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: gainsboro;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.todo-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.todo-input::placeholder {
+  color: #aaa;
+}
+
+/* Bouton Ajouter */
+.add-button {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+/* Liste des tâches */
+.todo-list {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+/* Élément de tâche */
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.todo-item:hover {
+  background: #f0f0f0;
+  transform: translateX(4px);
+}
+
+/* Tâche terminée */
+.todo-item.completed {
+  background: #e8f5e9;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #9e9e9e;
+}
+
+/* Checkbox */
+.todo-checkbox {
+  width: 22px;
+  height: 22px;
+  margin-right: 14px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+/* Texte de la tâche */
+.todo-text {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+/* Bouton de suppression */
+.delete-button {
+  background: #ff5252;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: #d32f2f;
+}
+
+/* Compteur */
+.counter {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+/* État vide */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .app {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .input-container {
+    flex-direction: column;
+  }
+
+  .add-button {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+}

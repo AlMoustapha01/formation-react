@@ -1,0 +1,44 @@
+/* ============================================
+   FICHIER: components/Dashboard.css
+   Styles du tableau de bord
+   ============================================ */
+
+.dashboard {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.dashboard-main {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-welcome {
+  color: #1E5A8A;
+  margin-bottom: 32px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 20px;
+  }
+
+  .dashboard-welcome {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+
+  .dashboard-grid {
+    gap: 16px;
+  }
+}
