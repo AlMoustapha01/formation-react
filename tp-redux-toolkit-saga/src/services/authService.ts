@@ -1,39 +1,53 @@
-import { LoginCredentials, User } from '../types';
+import { LoginCredentials, User } from "../types";
 
 // Utilisateurs mockés
 const mockUsers: (User & { password: string })[] = [
   {
     id: 1,
-    email: 'admin@cnss.bj',
-    password: 'password123',
-    name: 'Admin CNSS',
-    avatar: 'https://ui-avatars.com/api/?name=Admin+CNSS&background=3b82f6&color=fff',
+    email: "admin@cnss.bj",
+    password: "password123",
+    name: "Admin CNSS",
+    avatar:
+      "https://ui-avatars.com/api/?name=Admin+CNSS&background=3b82f6&color=fff",
   },
   {
     id: 2,
-    email: 'user@cnss.bj',
-    password: 'password123',
-    name: 'Utilisateur Test',
-    avatar: 'https://ui-avatars.com/api/?name=User+Test&background=10b981&color=fff',
+    email: "user@cnss.bj",
+    password: "password123",
+    name: "Utilisateur Test",
+    avatar:
+      "https://ui-avatars.com/api/?name=User+Test&background=10b981&color=fff",
+  },
+
+  {
+    id: 3,
+    email: "test@cnss.bj",
+    password: "password123",
+    name: "Testeur CNSS",
+    avatar:
+      "https://ui-avatars.com/api/?name=Testeur+CNSS&background=f59e0b&color=fff",
   },
 ];
 
 // Simuler un délai réseau
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const authService = {
   /**
    * Connexion utilisateur
    */
-  async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
+  async login(
+    credentials: LoginCredentials
+  ): Promise<{ user: User; token: string }> {
     await delay(1000);
 
     const user = mockUsers.find(
-      u => u.email === credentials.email && u.password === credentials.password
+      (u) =>
+        u.email === credentials.email && u.password === credentials.password
     );
 
     if (!user) {
-      throw new Error('Email ou mot de passe incorrect');
+      throw new Error("Email ou mot de passe incorrect");
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -50,8 +64,8 @@ export const authService = {
    */
   async logout(): Promise<void> {
     await delay(300);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   },
 
   /**
@@ -59,9 +73,9 @@ export const authService = {
    */
   async getCurrentUser(): Promise<User | null> {
     await delay(500);
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     if (!userStr) return null;
-    
+
     try {
       return JSON.parse(userStr);
     } catch {
@@ -74,7 +88,7 @@ export const authService = {
    */
   async verifyToken(token: string): Promise<boolean> {
     await delay(200);
-    return token.startsWith('mock-jwt-token-');
+    return token.startsWith("mock-jwt-token-");
   },
 };
 

@@ -1,13 +1,13 @@
-import { call, put, debounce, takeLatest, select } from 'redux-saga/effects';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { productService } from '../../services/productService';
+import { call, put, debounce, select } from "redux-saga/effects";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { productService } from "../../services/productService";
 import {
   setSearchQuery,
   setSearchResults,
   setSearchLoading,
-} from '../../features/products/productsSlice';
-import { Product } from '../../types';
-import { RootState } from '../../store';
+} from "../../features/products/productsSlice";
+import { Product } from "../../types";
+import { RootState } from "../../store";
 
 /**
  * Saga de recherche de produits
@@ -36,7 +36,7 @@ function* searchProductsSaga(
     const results: Product[] = yield call(productService.search, query);
     yield put(setSearchResults(results));
   } catch (error: any) {
-    console.error('[Search Saga] Erreur:', error);
+    console.error("[Search Saga] Erreur:", error);
     // En cas d'erreur, afficher tous les produits
     const allProducts: Product[] = yield select(
       (state: RootState) => state.products.items
