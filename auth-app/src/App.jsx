@@ -3,15 +3,14 @@
 // Point d'entrée de l'application
 // ============================================
 
-import { AuthProvider } from './contexts/AuthContext';
-import { AppContent } from './components/AppContent';
 import './App.css';
+import { LoginPage } from './components/LoginPage';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    // Envelopper toute l'application avec le Provider
     <AuthProvider>
-      <AppContent />
+      <LoginPage />
     </AuthProvider>
   );
 }
