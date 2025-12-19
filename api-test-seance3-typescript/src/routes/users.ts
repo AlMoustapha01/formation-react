@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { userService } from "../services/userService";
 import { authenticateToken } from "../middleware/auth";
 import { AuthenticatedRequest } from "../types";
+import { logError } from "../utils/logger";
 
 const router = Router();
 
@@ -65,6 +66,10 @@ router.get("/", (req: AuthenticatedRequest, res: Response) => {
     });
     res.json(result);
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "get_users",
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -106,6 +111,10 @@ router.get("/:id", (req: AuthenticatedRequest, res: Response) => {
     const user = userService.getUserById(Number(req.params.id));
     res.json(user);
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "get_user_by_id",
+      targetUserId: req.params.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -155,6 +164,10 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       user,
     });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "create_user",
+      email: req.body.email,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -206,6 +219,11 @@ router.delete("/:id", (req: AuthenticatedRequest, res: Response) => {
     userService.deleteUser(Number(req.params.id), req.user!.id);
     res.json({ message: "Utilisateur supprimé" });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "delete_user",
+      targetUserId: req.params.id,
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",

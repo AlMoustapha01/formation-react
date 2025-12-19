@@ -1,18 +1,59 @@
-import './App.css'
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router';
+import { Provider } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
+import { store } from './store';
+import { useAppDispatch } from './store/hooks';
+import { checkSession } from './features/auth/authSlice';
+import { Header } from './components/Header';
+import { HomePage } from './pages/HomePage';
+import { CartPage } from './pages/CartPage';
+import { LoginPage } from './pages/LoginPage';
+import { initCart } from './store/sagas/cartSaga';
+
+function AppContent() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // Vérifier la session utilisateur au démarrage
+    dispatch(checkSession());
+    // Charger le panier depuis localStorage
+    dispatch(initCart());
+  }, [dispatch]);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </main>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+          },
+        }}
+      />
+    </div>
+  );
+}
 
 function App() {
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">TP Redux</h1>
-      <p className="mt-2 text-gray-600">Bienvenue sur l'application Redux</p>
-      <div className="mt-4 p-4 bg-blue-100 rounded-lg">
-        <p className="text-blue-800">Cette application utilise Redux pour la gestion d'état.</p>
-      </div>
-      <div className="mt-4 p-4 bg-green-100 rounded-lg">
-        <p className="text-green-800">Implémentez vos reducers et actions ici.</p>
-      </div>
-    </div>
-  )
+    <Provider store={store}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </Provider>
+  );
 }
 
-export default App
+export default App;

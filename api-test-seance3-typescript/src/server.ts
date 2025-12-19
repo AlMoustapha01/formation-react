@@ -13,6 +13,7 @@ import { swaggerSpec } from "./config/swagger";
 import { randomDelay } from "./utils/helpers";
 import { tasks, users } from "./utils/database";
 import { ErrorCodes } from "./types";
+import logger, { logRequest, logError } from "./utils/logger";
 
 // Routes
 import authRoutes from "./routes/auth";
@@ -45,10 +46,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   setTimeout(next, delay);
 });
 
-// Logger des requêtes
+// Logger des requêtes avec mesure du temps de réponse
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  const startTime = Date.now();
+
+  // Intercepter la fin de la réponse pour logger
+  res.on("finish", () => {
+    const duration = Date.now() - startTime;
+    logRequest(req.method, req.path, res.statusCode, duration);
+  });
+
   next();
 });
 
@@ -179,6 +186,7 @@ app.get("/api/slow", (req: Request, res: Response) => {
 
 // 404 - Route non trouvée
 app.use((req: Request, res: Response) => {
+  logger.warn(`Route non trouvée: ${req.method} ${req.path}`);
   res.status(404).json({
     error: "Route non trouvée",
     code: ErrorCodes.NOT_FOUND,
@@ -188,7 +196,13 @@ app.use((req: Request, res: Response) => {
 
 // Gestionnaire d'erreurs global
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error("Erreur:", err);
+  logError(err, {
+    method: req.method,
+    path: req.path,
+    body: req.body,
+    query: req.query,
+    ip: req.ip,
+  });
   res.status(500).json({
     error: "Erreur serveur interne",
     code: ErrorCodes.INTERNAL_ERROR,
@@ -200,6 +214,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // =============================================================================
 
 app.listen(config.port, () => {
+  logger.info(`Serveur démarré sur le port ${config.port}`);
   console.log("");
   console.log(
     "╔══════════════════════════════════════════════════════════════════╗"

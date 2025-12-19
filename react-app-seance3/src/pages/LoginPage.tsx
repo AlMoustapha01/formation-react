@@ -20,7 +20,6 @@ export function LoginPage() {
 
       <div className="relative z-10">
         <LoginForm />
-        
         {/* Footer */}
         <p className="text-center text-primary-200 text-sm mt-8">
           Formation React.js - CNSS Bénin © 2025

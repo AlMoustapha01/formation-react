@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { authService } from "../services/authService";
 import { authenticateToken } from "../middleware/auth";
 import { AuthenticatedRequest } from "../types";
+import { logError, logAuth } from "../utils/logger";
 
 const router = Router();
 
@@ -34,8 +35,15 @@ const router = Router();
 router.post("/login", async (req, res: Response) => {
   try {
     const result = await authService.login(req.body);
+    logAuth("login", req.body.email || "unknown", true);
     res.json(result);
   } catch (err: any) {
+    logAuth(
+      "login",
+      req.body.email || "unknown",
+      false,
+      err.error || err.message
+    );
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -74,6 +82,7 @@ router.post("/refresh", (req, res: Response) => {
     const result = authService.refresh(req.body.refreshToken);
     res.json(result);
   } catch (err: any) {
+    logError(err.error || err.message, { action: "refresh_token" });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -142,6 +151,10 @@ router.get(
       const user = authService.getProfile(req.user!.id);
       res.json(user);
     } catch (err: any) {
+      logError(err.error || err.message, {
+        action: "get_profile",
+        userId: req.user?.id,
+      });
       res.status(err.status || 500).json({
         error: err.error || "Erreur serveur",
         code: err.code || "SERVER_ERROR",
@@ -194,6 +207,10 @@ router.put(
         user,
       });
     } catch (err: any) {
+      logError(err.error || err.message, {
+        action: "update_profile",
+        userId: req.user?.id,
+      });
       res.status(err.status || 500).json({
         error: err.error || "Erreur serveur",
         code: err.code || "SERVER_ERROR",

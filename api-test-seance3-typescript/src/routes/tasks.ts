@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { taskService } from "../services/taskService";
 import { authenticateToken } from "../middleware/auth";
 import { AuthenticatedRequest, TaskPriority } from "../types";
+import { logError } from "../utils/logger";
 
 const router = Router();
 
@@ -85,6 +86,10 @@ router.get("/", (req: AuthenticatedRequest, res: Response) => {
     });
     res.json(result);
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "get_tasks",
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -126,6 +131,11 @@ router.get("/:id", (req: AuthenticatedRequest, res: Response) => {
     const task = taskService.getTaskById(Number(req.params.id), req.user!.id);
     res.json(task);
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "get_task_by_id",
+      taskId: req.params.id,
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -175,6 +185,11 @@ router.post("/", (req: AuthenticatedRequest, res: Response) => {
       task,
     });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "create_task",
+      userId: req.user?.id,
+      title: req.body.title,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -234,6 +249,11 @@ router.put("/:id", (req: AuthenticatedRequest, res: Response) => {
       task,
     });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "update_task",
+      taskId: req.params.id,
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -285,6 +305,11 @@ router.patch("/:id/toggle", (req: AuthenticatedRequest, res: Response) => {
       task,
     });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "toggle_task",
+      taskId: req.params.id,
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",
@@ -330,6 +355,11 @@ router.delete("/:id", (req: AuthenticatedRequest, res: Response) => {
     taskService.deleteTask(Number(req.params.id), req.user!.id);
     res.json({ message: "Tâche supprimée" });
   } catch (err: any) {
+    logError(err.error || err.message, {
+      action: "delete_task",
+      taskId: req.params.id,
+      userId: req.user?.id,
+    });
     res.status(err.status || 500).json({
       error: err.error || "Erreur serveur",
       code: err.code || "SERVER_ERROR",

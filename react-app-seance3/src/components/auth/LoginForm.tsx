@@ -1,44 +1,42 @@
-import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Mail, Lock, LogIn } from 'lucide-react';
 
+const loginSchema = yup.object({
+  email: yup
+    .string()
+    .required('L\'email est requis')
+    .email('Email invalide'),
+  password: yup
+    .string()
+    .required('Le mot de passe est requis')
+    .min(6, 'Minimum 6 caractères'),
+});
+
+type LoginFormData = yup.InferType<typeof loginSchema>;
+
 export function LoginForm() {
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  const validate = (): boolean => {
-    const newErrors: { email?: string; password?: string } = {};
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    clearErrors,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+  });
 
-    if (!email) {
-      newErrors.email = 'L\'email est requis';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email invalide';
-    }
-
-    if (!password) {
-      newErrors.password = 'Le mot de passe est requis';
-    } else if (password.length < 6) {
-      newErrors.password = 'Minimum 6 caractères';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    if (!validate()) return;
-
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      await login({ email, password });
+      await login(data);
       navigate('/dashboard');
     } catch (error) {
       // Erreur gérée dans le contexte
@@ -51,13 +49,13 @@ export function LoginForm() {
       user: { email: 'user@cnss.bj', password: 'password123' },
       dev: { email: 'dev@cnss.bj', password: 'password123' },
     };
-    setEmail(credentials[type].email);
-    setPassword(credentials[type].password);
-    setErrors({});
+    setValue('email', credentials[type].email);
+    setValue('password', credentials[type].password);
+    clearErrors();
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full min-w-3xl">
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
@@ -67,7 +65,7 @@ export function LoginForm() {
           <p className="text-gray-500 mt-2">Formation React.js - CNSS Bénin</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Mail className="h-5 w-5 text-gray-400" />
@@ -75,9 +73,8 @@ export function LoginForm() {
             <Input
               type="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
+              {...register('email')}
+              error={errors.email?.message}
               className="pl-10"
               autoComplete="email"
             />
@@ -90,9 +87,8 @@ export function LoginForm() {
             <Input
               type="password"
               placeholder="Mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
+              {...register('password')}
+              error={errors.password?.message}
               className="pl-10"
               autoComplete="current-password"
             />
